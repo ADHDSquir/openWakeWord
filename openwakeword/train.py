@@ -758,7 +758,7 @@ if __name__ == '__main__':
     # Set the total length of the training clips based on the ~median generated clip duration, rounding to the nearest 1000 samples
     # and setting to 32000 when the median + 750 ms is close to that, as it's a good default value
     n = 50  # sample size
-    positive_clips = [str(i) for i in Path(positive_test_output_dir).glob("*.wav")]
+    positive_clips = [str(i) for i in Path(positive_test_output_dir).rglob("*.wav")]
     duration_in_samples = []
     for i in range(n):
         sr, dat = scipy.io.wavfile.read(positive_clips[np.random.randint(0, len(positive_clips))])
@@ -773,25 +773,25 @@ if __name__ == '__main__':
     # Do Data Augmentation
     if args.augment_clips is True:
         if not os.path.exists(os.path.join(feature_save_dir, "positive_features_train.npy")) or args.overwrite is True:
-            positive_clips_train = [str(i) for i in Path(positive_train_output_dir).glob("*.wav")]*config["augmentation_rounds"]
+            positive_clips_train = [str(i) for i in Path(positive_train_output_dir).rglob("*.wav")]*config["augmentation_rounds"]
             positive_clips_train_generator = augment_clips(positive_clips_train, total_length=config["total_length"],
                                                            batch_size=config["augmentation_batch_size"],
                                                            background_clip_paths=background_paths,
                                                            RIR_paths=rir_paths)
 
-            positive_clips_test = [str(i) for i in Path(positive_test_output_dir).glob("*.wav")]*config["augmentation_rounds"]
+            positive_clips_test = [str(i) for i in Path(positive_test_output_dir).rglob("*.wav")]*config["augmentation_rounds"]
             positive_clips_test_generator = augment_clips(positive_clips_test, total_length=config["total_length"],
                                                           batch_size=config["augmentation_batch_size"],
                                                           background_clip_paths=background_paths,
                                                           RIR_paths=rir_paths)
 
-            negative_clips_train = [str(i) for i in Path(negative_train_output_dir).glob("*.wav")]*config["augmentation_rounds"]
+            negative_clips_train = [str(i) for i in Path(negative_train_output_dir).rglob("*.wav")]*config["augmentation_rounds"]
             negative_clips_train_generator = augment_clips(negative_clips_train, total_length=config["total_length"],
                                                            batch_size=config["augmentation_batch_size"],
                                                            background_clip_paths=background_paths,
                                                            RIR_paths=rir_paths)
 
-            negative_clips_test = [str(i) for i in Path(negative_test_output_dir).glob("*.wav")]*config["augmentation_rounds"]
+            negative_clips_test = [str(i) for i in Path(negative_test_output_dir).rglob("*.wav")]*config["augmentation_rounds"]
             negative_clips_test_generator = augment_clips(negative_clips_test, total_length=config["total_length"],
                                                           batch_size=config["augmentation_batch_size"],
                                                           background_clip_paths=background_paths,
