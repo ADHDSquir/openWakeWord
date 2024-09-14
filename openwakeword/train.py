@@ -651,6 +651,9 @@ if __name__ == '__main__':
     negative_test_output_dir = os.path.join(config["output_dir"], config["model_name"], "negative_test")
     feature_save_dir = os.path.join(config["output_dir"], config["model_name"])
 
+    # Max number of files per sub dir
+    max_dir_size = 1000
+
     # Get paths for impulse response and background audio files
     rir_paths = [i.path for j in config["rir_paths"] for i in os.scandir(j)]
     background_paths = []
@@ -671,7 +674,7 @@ if __name__ == '__main__':
                 batch_size=config["tts_batch_size"],
                 noise_scales=[0.98], noise_scale_ws=[0.98], length_scales=[0.75, 1.0, 1.25],
                 output_dir=positive_train_output_dir, auto_reduce_batch_size=True,
-                file_names=[uuid.uuid4().hex + ".wav" for i in range(config["n_samples"])]
+                file_names=[f"{i//max_dir_size}/{uuid.uuid4().hex}.wav" for i in range(config["n_samples"])]
             )
             torch.cuda.empty_cache()
         else:
@@ -683,10 +686,13 @@ if __name__ == '__main__':
             os.mkdir(positive_test_output_dir)
         n_current_samples = sum(1 for _ in Path(positive_test_output_dir).rglob("*.wav"))
         if n_current_samples <= 0.95*config["n_samples_val"]:
-            generate_samples(text=config["target_phrase"], max_samples=config["n_samples_val"]-n_current_samples,
-                             batch_size=config["tts_batch_size"],
-                             noise_scales=[1.0], noise_scale_ws=[1.0], length_scales=[0.75, 1.0, 1.25],
-                             output_dir=positive_test_output_dir, auto_reduce_batch_size=True)
+            generate_samples(
+                text=config["target_phrase"], max_samples=config["n_samples_val"]-n_current_samples,
+                batch_size=config["tts_batch_size"],
+                noise_scales=[1.0], noise_scale_ws=[1.0], length_scales=[0.75, 1.0, 1.25],
+                output_dir=positive_test_output_dir, auto_reduce_batch_size=True,
+                file_names=[f"{i//max_dir_size}/{uuid.uuid4().hex}.wav" for i in range(config["n_samples_val"])]
+            )
             torch.cuda.empty_cache()
         else:
             logging.warning(f"Skipping generation of positive clips testing, as ~{config['n_samples_val']} already exist")
@@ -708,7 +714,7 @@ if __name__ == '__main__':
                              batch_size=config["tts_batch_size"]//7,
                              noise_scales=[0.98], noise_scale_ws=[0.98], length_scales=[0.75, 1.0, 1.25],
                              output_dir=negative_train_output_dir, auto_reduce_batch_size=True,
-                             file_names=[uuid.uuid4().hex + ".wav" for i in range(config["n_samples"])]
+                             file_names=[f"{i//max_dir_size}/{uuid.uuid4().hex}.wav" for i in range(config["n_samples"])]
                              )
             torch.cuda.empty_cache()
         else:
@@ -730,7 +736,9 @@ if __name__ == '__main__':
             generate_samples(text=adversarial_texts, max_samples=config["n_samples_val"]-n_current_samples,
                              batch_size=config["tts_batch_size"]//7,
                              noise_scales=[1.0], noise_scale_ws=[1.0], length_scales=[0.75, 1.0, 1.25],
-                             output_dir=negative_test_output_dir, auto_reduce_batch_size=True)
+                             output_dir=negative_test_output_dir, auto_reduce_batch_size=True,
+                             file_names=[f"{i//max_dir_size}/{uuid.uuid4().hex}.wav" for i in range(config["n_samples_val"])]
+                             )
             torch.cuda.empty_cache()
         else:
             logging.warning(f"Skipping generation of negative clips for testing, as ~{config['n_samples_val']} already exist")
