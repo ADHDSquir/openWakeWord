@@ -670,7 +670,7 @@ if __name__ == '__main__':
         n_current_samples = sum(1 for _ in Path(positive_train_output_dir).rglob('*.wav'))
         if n_current_samples <= 0.95*config["n_samples"]:
             # Create output subdirs
-            for i in range(config["n_samples"]//max_dir_size):
+            for i in range(config["n_samples"] // max_dir_size + 1):
                 os.makedirs(os.path.join(positive_train_output_dir,str(i)), exist_ok=True)
             generate_samples(
                 text=config["target_phrase"], max_samples=config["n_samples"]-n_current_samples,
@@ -690,7 +690,7 @@ if __name__ == '__main__':
         n_current_samples = sum(1 for _ in Path(positive_test_output_dir).rglob("*.wav"))
         if n_current_samples <= 0.95*config["n_samples_val"]:
             # Create output subdirs
-            for i in range(config["n_samples_val"]//max_dir_size):
+            for i in range(config["n_samples_val"] // max_dir_size + 1):
                 os.makedirs(os.path.join(positive_test_output_dir,str(i)), exist_ok=True)
             generate_samples(
                 text=config["target_phrase"], max_samples=config["n_samples_val"]-n_current_samples,
@@ -710,7 +710,7 @@ if __name__ == '__main__':
         n_current_samples = sum(1 for _ in Path(negative_train_output_dir).rglob("*.wav"))
         if n_current_samples <= 0.95*config["n_samples"]:
             # Create output subdirs
-            for i in range(config["n_samples"]//max_dir_size):
+            for i in range(config["n_samples"] // max_dir_size + 1):
                 os.makedirs(os.path.join(negative_train_output_dir,str(i)), exist_ok=True)
             adversarial_texts = config["custom_negative_phrases"]
             for target_phrase in config["target_phrase"]:
@@ -736,7 +736,7 @@ if __name__ == '__main__':
         n_current_samples = sum(1 for _ in Path(negative_test_output_dir).rglob("*.wav"))
         if n_current_samples <= 0.95*config["n_samples_val"]:
             # Create output subdirs
-            for i in range(config["n_samples_val"]//max_dir_size):
+            for i in range(config["n_samples_val"] // max_dir_size + 1):
                 os.makedirs(os.path.join(negative_test_output_dir,str(i)), exist_ok=True)
             adversarial_texts = config["custom_negative_phrases"]
             for target_phrase in config["target_phrase"]:
