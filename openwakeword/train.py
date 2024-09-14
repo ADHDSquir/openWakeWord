@@ -667,7 +667,7 @@ if __name__ == '__main__':
         logging.info("#"*50 + "\nGenerating positive clips for training\n" + "#"*50)
         if not os.path.exists(positive_train_output_dir):
             os.mkdir(positive_train_output_dir)
-        n_current_samples = sum(1 for _ in Path(positive_test_output_dir).rglob('*.wav'))
+        n_current_samples = sum(1 for _ in Path(positive_train_output_dir).rglob('*.wav'))
         if n_current_samples <= 0.95*config["n_samples"]:
             generate_samples(
                 text=config["target_phrase"], max_samples=config["n_samples"]-n_current_samples,
